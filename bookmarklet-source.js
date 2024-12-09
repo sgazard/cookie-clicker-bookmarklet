@@ -1,7 +1,9 @@
-// track stockmarket, and other data into a copyable string for external usage
-var Stockmarket = function(clicked){
+	// track stockmarket, and other data into a copyable string for external usage
+	var Stockmarket = function(clicked){
 	var xTesting=Game.Objects.Bank.minigame.goods;
-  var ScaleFactor=1e+57;
+  	var ScaleFactor=1e+57;
+	var factor2=(Game.cookiesPsRawHighest/Game.cookiesPsRaw)*Game.cookiesPsRaw/ScaleFactor;
+
 
 	var xTestingString=[];var xTestingStockMarket = {};
 	// console.log('ticker,stock,$price,cookies')
@@ -10,7 +12,7 @@ var Stockmarket = function(clicked){
 
 		// +xTesting[i].stock+','+
 	//	xTestingString +=(xTesting[i].symbol+','+(xTesting[i].stock*xTesting[i].val*Game.cookiesPsRaw/1e+57).toFixed(2))+"\n";
-		xTestingString.push((xTesting[i].stock*xTesting[i].val*Game.cookiesPsRaw/ScaleFactor).toFixed(2));
+		xTestingString.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
 	}
 	xTestingString = xTestingString.join(',');
 	// add in current cookies
