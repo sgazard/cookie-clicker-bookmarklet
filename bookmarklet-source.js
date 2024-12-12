@@ -17,7 +17,7 @@
 	xTestingString = xTestingString.join(',');
 	// add in current cookies
 
-	xTestingString = [Game.cookies/ScaleFactor,WrinklerAverage(ScaleFactor),Game.cookiesPs*.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
+	xTestingString = [Game.cookies/ScaleFactor,WrinklerAverage(ScaleFactor),Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
 	// ad in average wrinkler
 
 	if(!document.getElementById('xTestingStockMarket')){
@@ -29,25 +29,25 @@
 
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
 	//console.log(xTestingStockMarket);
-  var onclickString = ' <a href="#" onclick=Stockmarket(true);"'+'">Copy updated values</a>';
+	var onclickString = ' <a href="#" onclick=Stockmarket(true);"'+'">Copy updated values</a>';
 
 	xTestingStockMarket.innerHTML = onclickString;
 	//console.log(xTestingString)
 	if(clicked == true){navigator.clipboard.writeText(xTestingString);}
-}
+};
 
 var WrinklerAverage = function(ScaleFactor){
 	var WrinklerCount = 0;
 	var WrinklerTotal = 0;
-  for (var i in Game.wrinklers){
+	for (var i in Game.wrinklers){
 		if(!Game.wrinklers.hasOwnProperty(i)){continue;}
 		if(Game.wrinklers[i].sucked>0){
 			WrinklerCount++;
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
-	return WrinklerTotal/WrinklerCount/ScaleFactor;
-}
+	return (WrinklerTotal/WrinklerCount/ScaleFactor);
+};
 
 // run the insert for the first time
 Stockmarket();
