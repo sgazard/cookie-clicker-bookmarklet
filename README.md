@@ -16,7 +16,7 @@ Current Cookes |AverageWrinkler |Cookies per second |Total  in ascension |Stock 
 # how to use
 
 
-1. Copy the data from (bookmarklet-minified.js)[https://github.com/sgazard/cookie-clicker-bookmarklet/blob/main/bookmarklet-minified.js]
+1. Copy the data from [bookmarklet-minified.js](https://github.com/sgazard/cookie-clicker-bookmarklet/blob/main/bookmarklet-minified.js)
 2. make a bookmark of *any webpage* - ideally in the bookmarks bar for convenience
 3. edit the bookmark and change the url to the data from step 1
 4. then on cookie clicker pages, click your bookmark
