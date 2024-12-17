@@ -20,4 +20,4 @@ Current Cookes |AverageWrinkler |Cookies per second |Total  in ascension |Stock 
 2. make a bookmark of *any webpage* - ideally in the bookmarks bar for convenience
 3. edit the bookmark and change the url to the data from step 1
 4. then on cookie clicker pages, click your bookmark
-5. click on the "copy updated values" link at the bottom-left, and you have the data to parse out into the spreadsheet of your choice
+5. click on the "copy updated values" link at the bottom-left, and you have the data to parse out into [the spreadsheet](https://github.com/sgazard/cookie-clicker-bookmarklet/blob/main/Cookie%20clicker%20-%20blank.xlsx) (or one of your Choice) of your choice
