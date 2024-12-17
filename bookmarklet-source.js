@@ -23,7 +23,9 @@
 	if(!document.getElementById('xTestingStockMarket')){
 		xTestingStockMarket = document.createElement('div');
 		xTestingStockMarket.id='xTestingStockMarket';
-		xTestingStockMarket.style="position:absolute;bottom:15px;border:1px solid red;z-index:1000000000000;padding:4px;background-color:blue";
+		// positioning to avoid being near scrollbars if zoomed in/out
+		// background colour of blue is simply because it stands out
+		xTestingStockMarket.style="position:absolute;bottom:15px;left:15px;border:1px solid red;z-index:1000000000000;padding:4px;background-color:blue";
 		document.body.appendChild(xTestingStockMarket);
 	}
 
