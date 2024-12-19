@@ -17,7 +17,7 @@
 	xTestingString = xTestingString.join(',');
 	// add in current cookies
 
-	xTestingString = [Game.cookies/ScaleFactor,WrinklerAverage(ScaleFactor),Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
+	xTestingString = [Game.cookies/ScaleFactor,WrinklerAverage(ScaleFactor)[0],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
 	// ad in average wrinkler
 
 	if(!document.getElementById('xTestingStockMarket')){
@@ -30,8 +30,9 @@
 	}
 
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
+		
 	//console.log(xTestingStockMarket);
-	var onclickString = ' <a href="#" onclick=Stockmarket(true);"'+'">Copy updated values</a>';
+	var onclickString = ' <a href="#" onclick=Stockmarket(true);"'+'">Copy updated values<br/>'+currentValues()+'</a>';
 
 	xTestingStockMarket.innerHTML = onclickString;
 	//console.log(xTestingString)
@@ -48,8 +49,13 @@ var WrinklerAverage = function(ScaleFactor){
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
-	return (WrinklerTotal/WrinklerCount/ScaleFactor);
+	return [WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerTotal/ScaleFactor];
 };
+
+var currentValues = function(){
+	var data = [];
+	data.push('Wrinklers: '+WrinklerAverage[1]);
+}
 
 // run the insert for the first time
 Stockmarket();
