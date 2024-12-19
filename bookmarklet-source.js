@@ -49,7 +49,8 @@ var WrinklerAverage = function(ScaleFactor){
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
-	return [WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerTotal/ScaleFactor];
+	if(WrinklerTotal==0){return [0,0];}
+	else{return [WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerTotal/ScaleFactor];}
 };
 
 var currentValues = function(){
