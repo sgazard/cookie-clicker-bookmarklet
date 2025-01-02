@@ -1,5 +1,5 @@
-	// track stockmarket, and other data into a copyable string for external usage
-	var Stockmarket = function(clicked){
+// track stockmarket, and other data into a copyable string for external usage
+var Stockmarket = function(clicked){
 	var xTesting=Game.Objects.Bank.minigame.goods;
   	var ScaleFactor=1e+57;
 	var factor2=(Game.cookiesPsRawHighest/Game.cookiesPsRaw)*Game.cookiesPsRaw/ScaleFactor;
@@ -16,8 +16,9 @@
 	}
 	xTestingString = xTestingString.join(',');
 	// add in current cookies
+	var tmpWrinklerAverage = WrinklerAverage(ScaleFactor);
 
-	xTestingString = [Game.cookies/ScaleFactor,WrinklerAverage(ScaleFactor),Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
+	xTestingString = [Game.cookies/ScaleFactor,tmpWrinklerAverage[0],tmpWrinklerAverage[1],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
 	// ad in average wrinkler
 
 	if(!document.getElementById('xTestingStockMarket')){
@@ -48,7 +49,7 @@ var WrinklerAverage = function(ScaleFactor){
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
-	return (WrinklerTotal/WrinklerCount/ScaleFactor);
+	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerTotal]);
 };
 
 // run the insert for the first time
