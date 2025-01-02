@@ -49,7 +49,7 @@ var WrinklerAverage = function(ScaleFactor){
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
-	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerTotal]);
+	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerCount]);
 };
 
 // run the insert for the first time
