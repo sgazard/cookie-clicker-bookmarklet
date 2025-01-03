@@ -54,14 +54,14 @@ var WrinklerAverage = function(ScaleFactor){
 };
 
 var StockmarketSellAll = function(){
-	var getEl = function(el){return document.getElementById(el);}
+	var getEl = function(el){return document.getElementById(el);};
 	var currentEl;
 	for(var i=0;i<21;i++){
 		currentEl = getEl('bankGood-'+i+'_-All');
 		if(!currentEl){continue;}
 		currentEl.click();
 	}
-}
+};
 
 // run the insert for the first time
 Stockmarket();
