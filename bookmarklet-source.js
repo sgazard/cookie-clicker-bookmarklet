@@ -1,7 +1,7 @@
-	// track stockmarket, and other data into a copyable string for external usage
-	var Stockmarket = function(clicked){
+// track stockmarket, and other data into a copyable string for external usage
+var Stockmarket = function(clicked){
 	var xTesting=Game.Objects.Bank.minigame.goods;
-  	var ScaleFactor=1e+57;
+	var ScaleFactor=1e+57;
 	var factor2=(Game.cookiesPsRawHighest/Game.cookiesPsRaw)*Game.cookiesPsRaw/ScaleFactor;
 
 
@@ -16,8 +16,9 @@
 	}
 	xTestingString = xTestingString.join(',');
 	// add in current cookies
+	var tmpWrinklerAverage = WrinklerAverage(ScaleFactor);
 
-	xTestingString = [Game.cookies/ScaleFactor,WrinklerAverage(ScaleFactor),Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
+	xTestingString = [Game.cookies/ScaleFactor,tmpWrinklerAverage[0],tmpWrinklerAverage[1],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
 	// ad in average wrinkler
 
 	if(!document.getElementById('xTestingStockMarket')){
@@ -31,7 +32,7 @@
 
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
 	//console.log(xTestingStockMarket);
-	var onclickString = ' <a href="#" onclick=Stockmarket(true);"'+'">Copy updated values</a>';
+	var onclickString = ' <a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>&nbsp;|&nbsp;<a href="#" onclick="StockmarketSellAll();return false;">sell all stock</a>';
 
 	xTestingStockMarket.innerHTML = onclickString;
 	//console.log(xTestingString)
@@ -48,7 +49,18 @@ var WrinklerAverage = function(ScaleFactor){
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
-	return (WrinklerTotal/WrinklerCount/ScaleFactor);
+	if(WrinklerCount==0){return [0,0];}
+	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerCount]);
+};
+
+var StockmarketSellAll = function(){
+	var getEl = function(el){return document.getElementById(el);};
+	var currentEl;
+	for(var i=0;i<21;i++){
+		currentEl = getEl('bankGood-'+i+'_-All');
+		if(!currentEl){continue;}
+		currentEl.click();
+	}
 };
 
 // run the insert for the first time
