@@ -63,5 +63,18 @@ var StockmarketSellAll = function(){
 	}
 };
 
+var StockmarketBuyBelow10 = function(){
+	var getEl = function(el){return document.getElementById(el);};
+	var currentEl;
+	for(var i=0;i<21;i++){
+		clickEl = getEl('bankGood-'+i+'_Max');
+		// nothing to click on.  nothing to determine
+		if(!clickEl){continue;}
+		valEl = getEl('bankGood-'+i+'-val').innerText.replace(/\$/,'');
+		// click if the value is below 10
+		if(valEl+0<10){clickEl.click();}
+	}
+};
+
 // run the insert for the first time
 Stockmarket();
