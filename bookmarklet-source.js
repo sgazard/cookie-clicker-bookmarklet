@@ -6,7 +6,7 @@ var Stockmarket = function(clicked){
 	// this corrects a multiplication issue I see to align with the UI
 	var factor2=(Game.cookiesPsRawHighest/Game.cookiesPsRaw)*Game.cookiesPsRaw/ScaleFactor;
 	// variables ready for use
-	var xTestingString=[];var xTestingStockMarket = {};
+	var xTestingString=[], xTestingStockMarket = {},StockTotal=0;
 	// add in current cookies
 	var tmpWrinklerAverage = WrinklerAverage(ScaleFactor);
 
