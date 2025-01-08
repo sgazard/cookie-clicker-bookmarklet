@@ -1,26 +1,33 @@
 // track stockmarket, and other data into a copyable string for external usage
 var Stockmarket = function(clicked){
 	var xTesting=Game.Objects.Bank.minigame.goods;
+	// 1e+57 is Octodecillion
 	var ScaleFactor=1e+57;
+	// this corrects a multiplication issue I see to align with the UI
 	var factor2=(Game.cookiesPsRawHighest/Game.cookiesPsRaw)*Game.cookiesPsRaw/ScaleFactor;
-
-
+	// variables ready for use
 	var xTestingString=[];var xTestingStockMarket = {};
-	// console.log('ticker,stock,$price,cookies')
-	for(var i in xTesting){
-		if(!xTesting.hasOwnProperty(i)){continue;}
-
-		// +xTesting[i].stock+','+
-	//	xTestingString +=(xTesting[i].symbol+','+(xTesting[i].stock*xTesting[i].val*Game.cookiesPsRaw/1e+57).toFixed(2))+"\n";
-		xTestingString.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
-	}
-	xTestingString = xTestingString.join(',');
 	// add in current cookies
 	var tmpWrinklerAverage = WrinklerAverage(ScaleFactor);
 
-	xTestingString = [Game.cookies/ScaleFactor,tmpWrinklerAverage[0],tmpWrinklerAverage[1],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
-	// ad in average wrinkler
+	
+	// search for stock market information
+	for(var i in xTesting){
+		if(!xTesting.hasOwnProperty(i)){continue;}
 
+		// SUM up the total for UI ticker
+		tmpTotal = (xTesting[i].stock*xTesting[i].val*factor2); 
+		StockTotal += tmpTotal;
+		// add the stock info for exporting
+		xTestingString.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
+	}
+	
+	// make the Stock values ready for export
+	xTestingString = xTestingString.join(',');
+	// make the string ready for exporting
+	xTestingString = [Game.cookies/ScaleFactor,tmpWrinklerAverage[0],tmpWrinklerAverage[1],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
+
+	// build (if needed) the box for the stats
 	if(!document.getElementById('xTestingStockMarket')){
 		xTestingStockMarket = document.createElement('div');
 		xTestingStockMarket.id='xTestingStockMarket';
@@ -30,15 +37,21 @@ var Stockmarket = function(clicked){
 		document.body.appendChild(xTestingStockMarket);
 	}
 
+	// get a reference to the built object
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
-	//console.log(xTestingStockMarket);
-	var onclickString = ' <a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>&nbsp;|&nbsp;<a href="#" onclick="StockmarketSellAll();return false;">sell all stock</a>';
+
+	// build the stats HTML
+	stats = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+', Wrinklers:'+(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]).toFixed(1)+', Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+tmpWrinklerAverage[0]*tmpWrinklerAverage[1]+StockTotal).toFixed(1)+'</div>';	
+	
+	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, <a href="#" onclick="StockmarketSellAbove(9.99);return false;"> ABOVE 10</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats;
 
 	xTestingStockMarket.innerHTML = onclickString;
-	//console.log(xTestingString)
+
+	// permit copying data to the clipboard if the browser has noticed the click
 	if(clicked == true){navigator.clipboard.writeText(xTestingString);}
 };
 
+// get Wrinkler Average information and total numbers
 var WrinklerAverage = function(ScaleFactor){
 	var WrinklerCount = 0;
 	var WrinklerTotal = 0;
@@ -49,22 +62,37 @@ var WrinklerAverage = function(ScaleFactor){
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
+	// don't return NaN
 	if(WrinklerCount==0){return [0,0];}
 	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerCount]);
 };
 
-var StockmarketSellAll = function(){
+// condensed function to allow selling based on an arbitrary number
+var StockmarketSellAbove = function(above,sellFallingStock){
+	if(!sellFallingStock){sellFallingStock=false;}
+	if(sellFallingStock==true){
+		console.log('selling falling stock above $'+above);
+	}
 	var getEl = function(el){return document.getElementById(el);};
 	var currentEl;
 	for(var i=0;i<21;i++){
-		currentEl = getEl('bankGood-'+i+'_-All');
-		if(!currentEl){continue;}
-		currentEl.click();
+		valEl = getEl('bankGood-'+i+'-val').innerText.replace(/\$/,'');
+		clickEl = getEl('bankGood-'+i+'_-All');
+		// nothing to click on.  nothing to determine
+		if(!clickEl){continue;}
+		// click if the value is below 10
+		if(sellFallingStock==false && valEl+0>above){clickEl.click();}
+//			if(sellFallingStock==true){} && valEl+0>above){clickEl.click();}
 	}
 };
 
-var StockmarketBuyBelow10 = function(){
-	var getEl = function(el){return document.getElementById(el);};
+// buy below a value.  Useful for automatic buying below a value
+var StockmarketBuyBelow = function(below){
+	Stockmarket();
+	var getEl = function(el){
+		if(document && document.getElementById && document.getElementById(el)){return document.getElementById(el);}
+		else{return false;}
+	};
 	var currentEl;
 	for(var i=0;i<21;i++){
 		clickEl = getEl('bankGood-'+i+'_Max');
@@ -72,9 +100,13 @@ var StockmarketBuyBelow10 = function(){
 		if(!clickEl){continue;}
 		valEl = getEl('bankGood-'+i+'-val').innerText.replace(/\$/,'');
 		// click if the value is below 10
-		if(valEl+0<10){clickEl.click();}
+		if(Math.floor(valEl)+0<below){clickEl.click();}
 	}
+	// update totals
+	Stockmarket();
 };
+// buy stock below $5 automatically and check every 30 seconds
+var StockmarketAutobuy = setInterval(StockmarketBuyBelow,30000,5);
 
-// run the insert for the first time
+// run for the first time to allow UI and buttons
 Stockmarket();
