@@ -9,6 +9,8 @@ var Stockmarket = function(clicked){
 	var xTestingString=[], xTestingStockMarket = {},StockTotal=0;
 	// add in current cookies
 	var tmpWrinklerAverage = WrinklerAverage(ScaleFactor);
+	// original purchase amount
+	var origPurchaseAmount = 0;
 
 	
 	// search for stock market information
@@ -18,6 +20,10 @@ var Stockmarket = function(clicked){
 		// SUM up the total for UI ticker
 		tmpTotal = (xTesting[i].stock*xTesting[i].val*factor2); 
 		StockTotal += tmpTotal;
+
+		// to determine and profit
+		origPurchaseAmount += tmpTotal/xTesting[i].val*xTesting[i].prev;
+
 		// add the stock info for exporting
 		xTestingString.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
 	}
@@ -41,7 +47,7 @@ var Stockmarket = function(clicked){
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
 
 	// build the stats HTML
-	stats = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+', Wrinklers:'+(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]).toFixed(1)+', Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+tmpWrinklerAverage[0]*tmpWrinklerAverage[1]+StockTotal).toFixed(1)+'</div>';	
+	stats = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+'), Wrinklers:'+(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]).toFixed(1)+', Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+tmpWrinklerAverage[0]*tmpWrinklerAverage[1]+StockTotal).toFixed(1)+'</div>';	
 	
 	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, <a href="#" onclick="StockmarketSellAbove(9.99);return false;"> ABOVE 10</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats;
 
@@ -106,7 +112,7 @@ var StockmarketBuyBelow = function(below){
 	Stockmarket();
 };
 // buy stock below $5 automatically and check every 30 seconds
-var StockmarketAutobuy = setInterval(StockmarketBuyBelow,30000,5);
+var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
 
 // run for the first time to allow UI and buttons
 Stockmarket();
