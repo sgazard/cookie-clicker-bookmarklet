@@ -1,35 +1,23 @@
 // track stockmarket, and other data into a copyable string for external usage
 var Stockmarket = function(clicked){
-	var xTesting=Game.Objects.Bank.minigame.goods;
 	// 1e+57 is Octodecillion
 	var ScaleFactor=1e+57;
 	// this corrects a multiplication issue I see to align with the UI
 	var factor2=(Game.cookiesPsRawHighest/Game.cookiesPsRaw)*Game.cookiesPsRaw/ScaleFactor;
-	// variables ready for use
-	var xTestingString=[], xTestingStockMarket = {},StockTotal=0;
 	// add in current cookies
 	var tmpWrinklerAverage = WrinklerAverage(ScaleFactor);
-	// original purchase amount
-	var origPurchaseAmount = 0;
 
-	
-	// search for stock market information
-	for(var i in xTesting){
-		if(!xTesting.hasOwnProperty(i)){continue;}
+	var wrinklers = {
+		'total':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]),
+		'maxScaled':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]*1.21)
+	};
 
-		// SUM up the total for UI ticker
-		tmpTotal = (xTesting[i].stock*xTesting[i].val*factor2); 
-		StockTotal += tmpTotal;
+	// build the stats & HTML
+	var stats = StockmarketStats(ScaleFactor,factor2,wrinklers);	
 
-		// to determine and profit
-		origPurchaseAmount += tmpTotal/xTesting[i].val*xTesting[i].prev;
-
-		// add the stock info for exporting
-		xTestingString.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
-	}
 	
 	// make the Stock values ready for export
-	xTestingString = xTestingString.join(',');
+	var xTestingString = stats.stats.join(',');
 	// make the string ready for exporting
 	xTestingString = [Game.cookies/ScaleFactor,tmpWrinklerAverage[0],tmpWrinklerAverage[1],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
 
@@ -46,10 +34,11 @@ var Stockmarket = function(clicked){
 	// get a reference to the built object
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
 
-	// build the stats HTML
-	stats = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+'), Wrinklers:'+(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]).toFixed(1)+', Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+tmpWrinklerAverage[0]*tmpWrinklerAverage[1]+StockTotal).toFixed(1)+'</div>';	
+
+
+
 	
-	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, <a href="#" onclick="StockmarketSellAbove(9.99);return false;"> ABOVE 10</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats;
+	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, <a href="#" onclick="StockmarketSellAbove(9.99);return false;"> ABOVE 10</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats.html;
 
 	xTestingStockMarket.innerHTML = onclickString;
 
@@ -111,8 +100,44 @@ var StockmarketBuyBelow = function(below){
 	// update totals
 	Stockmarket();
 };
+
+var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
+	// variables ready for use
+	var xTestingStockMarket = {},tmpString = '',tmpTotal = 0,StockTotal=0,origPurchaseAmount=0;	
+	// object for stock market
+	var xTesting=Game.Objects.Bank.minigame.goods;
+	// total stock market, Stock Stats
+	var ret = {'stats':[],'html':'','profit':[],'loss':[]};
+
+	// search for stock market information
+	for(var i in xTesting){
+		if(!xTesting.hasOwnProperty(i)){continue;}
+
+		// care only about stocks 'owned' in the game
+		if(xTesting[i].stock>0){
+			// SUM up the total for UI ticker
+			tmpTotal = (xTesting[i].stock*xTesting[i].val*factor2); 
+			StockTotal += tmpTotal;
+
+			// to determine any profit
+			origPurchaseAmount += tmpTotal/xTesting[i].val*xTesting[i].prev;
+			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' -('+(1-xTesting[i].val/xTesting[i].prev).toFixed(1)+')%');}
+			else{ret.profit.push(xTesting[i].symbol);}
+
+			// add the stock info for exporting
+			ret.stats.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
+		}
+	}
+	ret.html = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+' | '+((StockTotal)/(origPurchaseAmount)*100-100).toFixed(1)+'%), Wrinklers:'+wrinklers.total.toFixed(1)+' (Max: '+wrinklers.maxScaled.toFixed(1)+'), Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal).toFixed(1)+'</div>';
+	ret.html +='<div style="margin-top:0.5em">Loss: '+ret.loss.join(', ')+'</div>'	
+
+	return ret;
+};
 // buy stock below $5 automatically and check every 30 seconds
 var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
 
 // run for the first time to allow UI and buttons
 Stockmarket();
+
+// set 10 as the buying default
+document.getElementById('storeBulk10').click();
