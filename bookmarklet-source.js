@@ -38,7 +38,7 @@ var Stockmarket = function(clicked){
 
 
 	
-	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, <a href="#" onclick="StockmarketSellAbove(9.99);return false;"> ABOVE 10</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats.html;
+	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, Above: <a href="#" onclick="StockmarketSellAbove(9.99);return false;">10</a>, <a href="#" onclick="StockmarketSellAbove(49.99);return false;">50</a>, <a href="#" onclick="StockmarketSellAbove(99.99);return false;">100</a>, <a href="#" onclick="StockmarketSellAbove(149.99);return false;">150</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats.html;
 
 	xTestingStockMarket.innerHTML = onclickString;
 
@@ -113,19 +113,22 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 	for(var i in xTesting){
 		if(!xTesting.hasOwnProperty(i)){continue;}
 
-		// care only about stocks 'owned' in the game
-		if(xTesting[i].stock>0){
 			// SUM up the total for UI ticker
 			tmpTotal = (xTesting[i].stock*xTesting[i].val*factor2); 
 			StockTotal += tmpTotal;
 
-			// to determine any profit
+			// to determine any profit, if 
 			origPurchaseAmount += tmpTotal/xTesting[i].val*xTesting[i].prev;
-			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' -('+(1-xTesting[i].val/xTesting[i].prev).toFixed(1)+')%');}
-			else{ret.profit.push(xTesting[i].symbol);}
 
 			// add the stock info for exporting
 			ret.stats.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
+
+		// care only about stocks 'owned' in the game for profit/loss
+		if(xTesting[i].stock>0){
+
+			if(xTesting[i].val<5 && xTesting[i].prev<5){continue;}
+			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' -('+((1-xTesting[i].val/xTesting[i].prev)*100).toFixed(1)+')%');}
+			else{ret.profit.push(xTesting[i].symbol);}
 		}
 	}
 	ret.html = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+' | '+((StockTotal)/(origPurchaseAmount)*100-100).toFixed(1)+'%), Wrinklers:'+wrinklers.total.toFixed(1)+' (Max: '+wrinklers.maxScaled.toFixed(1)+'), Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal).toFixed(1)+'</div>';
@@ -133,7 +136,7 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 
 	return ret;
 };
-// buy stock below $5 automatically and check every 30 seconds
+// buy stock below $5 automatically and update ticker every 2 seconds
 var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
 
 // run for the first time to allow UI and buttons
