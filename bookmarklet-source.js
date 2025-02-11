@@ -127,12 +127,12 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 		if(xTesting[i].stock>0){
 
 			if(xTesting[i].val<5 && xTesting[i].prev<5){continue;}
-			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' -('+((1-xTesting[i].val/xTesting[i].prev)*100).toFixed(1)+')%');}
+			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' (<span style="color:red;font-weight:bold;">-'+((1-xTesting[i].val/xTesting[i].prev)*100).toFixed(1)+'</span>)%');}
 			else{ret.profit.push(xTesting[i].symbol);}
 		}
 	}
 	ret.html = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+' | '+((StockTotal)/(origPurchaseAmount)*100-100).toFixed(1)+'%), Wrinklers:'+wrinklers.total.toFixed(1)+' (Max: '+wrinklers.maxScaled.toFixed(1)+'), Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal).toFixed(1)+'</div>';
-	ret.html +='<div style="margin-top:0.5em">Loss: '+ret.loss.join(', ')+'</div>'	
+	if(ret.loss.length>0){ret.html +='<div style="margin-top:0.5em">Loss: '+ret.loss.join(', ')+'</div>';}
 
 	return ret;
 };
@@ -144,3 +144,21 @@ Stockmarket();
 
 // set 10 as the buying default
 document.getElementById('storeBulk10').click();
+
+
+ClickThoseCookiesNow = function(){
+	var getEl = function(el){return document.getElementsByClassName(el);};
+	var golden = getEl('shimmer');
+	if(golden && golden.length>0){
+		console.log('['+(new Date().toLocaleString())+'] attempting to click these '+golden.length+' cookies');
+		for (var i in golden){
+			if(!golden.hasOwnProperty(i)){continue;}
+			else{golden[i].click();}
+		}
+	}
+};
+
+// I want golden cookies clicked
+if(ClickThoseCookies){clearInterval(ClickThoseCookies);}
+// Autoclick golden cookies (all of them)
+var ClickThoseCookies = setInterval(ClickThoseCookiesNow,100);
