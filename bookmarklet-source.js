@@ -108,6 +108,7 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 	var xTesting=Game.Objects.Bank.minigame.goods;
 	// total stock market, Stock Stats
 	var ret = {'stats':[],'html':'','profit':[],'loss':[]};
+	var timeNextGrimoire = GrimoireAutoClickConjure();
 
 	// search for stock market information
 	for(var i in xTesting){
@@ -131,13 +132,25 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 			else{ret.profit.push(xTesting[i].symbol);}
 		}
 	}
-	ret.html = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+' | '+((StockTotal)/(origPurchaseAmount)*100-100).toFixed(1)+'%), Wrinklers:'+wrinklers.total.toFixed(1)+' (Max: '+wrinklers.maxScaled.toFixed(1)+'), Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal).toFixed(1)+'</div>';
+	ret.html = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+' | '+((StockTotal)/(origPurchaseAmount)*100-100).toFixed(1)+'%), Wrinklers:'+wrinklers.total.toFixed(1)+' (Max: '+wrinklers.maxScaled.toFixed(1)+'), Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal).toFixed(1)+' | '+timeNextGrimoire+'</div>';
 	if(ret.loss.length>0){ret.html +='<div style="margin-top:0.5em">Loss: '+ret.loss.join(', ')+'</div>';}
 
 	return ret;
 };
+
+// currently not smart enough to know if we've got a clot running
+GrimoireAutoClickConjure = function(){
+	var tempInfo = document.getElementById('grimoireBarText').textContent.split(' ')[0].split('/');
+	var currRate = document.getElementById('grimoireBarText').textContent.split('+')[1].split('/')[0];
+	var timeToNextAutoGrimoire = Math.round((tempInfo[1]-tempInfo[0]-5)/currRate/60,1)+' mins';
+	if(tempInfo[1]-tempInfo[0] <5){
+		document.getElementById('grimoireSpell0').click();
+	}
+	return timeToNextAutoGrimoire;
+}
 // buy stock below $5 automatically and update ticker every 2 seconds
 var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
+
 
 // run for the first time to allow UI and buttons
 Stockmarket();
