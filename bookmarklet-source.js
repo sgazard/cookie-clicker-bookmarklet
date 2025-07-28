@@ -140,10 +140,15 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 
 // currently not smart enough to know if we've got a clot running
 GrimoireAutoClickConjure = function(){
-	var tempInfo = document.getElementById('grimoireBarText').textContent.split(' ')[0].split('/');
-	var currRate = document.getElementById('grimoireBarText').textContent.split('+')[1].split('/')[0];
-	var timeToNextAutoGrimoire = Math.round((tempInfo[1]-tempInfo[0]-5)/currRate/60,1)+' mins';
-	if(tempInfo[1]-tempInfo[0] <5){
+	var Grimoire = Game.ObjectsById[7].minigame;
+	var grimoireMax = Grimoire.magic;
+	var grimoireMin = Grimoire.magicM;
+	var grimoireRate = Grimoire.magicPS;
+	var timeToNextAutoGrimoire = 0;
+	if(grimoireRate>0){
+		timeToNextAutoGrimoire = Math.round((grimoireMax-grimoireMin-5)/grimoireRate/60,1)+' mins';
+	}
+	if(grimoireMax-grimoireMin <5){
 		document.getElementById('grimoireSpell0').click();
 	}
 	return timeToNextAutoGrimoire;
