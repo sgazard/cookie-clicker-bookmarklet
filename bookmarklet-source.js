@@ -141,8 +141,8 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 // currently not smart enough to know if we've got a clot running
 GrimoireAutoClickConjure = function(){
 	var Grimoire = Game.ObjectsById[7].minigame;
-	var grimoireMax = Grimoire.magic;
-	var grimoireMin = Grimoire.magicM;
+	var grimoireMax = Grimoire.magicM;
+	var grimoireMin = Grimoire.magic;
 	var grimoireRate = Grimoire.magicPS;
 	var timeToNextAutoGrimoire = 0;
 	if(grimoireRate>0){
