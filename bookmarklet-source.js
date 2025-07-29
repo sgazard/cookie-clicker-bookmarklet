@@ -140,13 +140,16 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 
 // currently not smart enough to know if we've got a clot running
 GrimoireAutoClickConjure = function(){
+	// this scale factor is simply because the GrimoireRate is otherwise wrong
+	// no idea why this needs to be compensated for
+	var ScaleFactor = 29;  
 	var Grimoire = Game.ObjectsById[7].minigame;
 	var grimoireMax = Grimoire.magicM;
 	var grimoireMin = Grimoire.magic;
 	var grimoireRate = Grimoire.magicPS;
 	var timeToNextAutoGrimoire = 0;
 	if(grimoireRate>0){
-		timeToNextAutoGrimoire = Math.round((grimoireMax-grimoireMin-5)/grimoireRate/60,1)+' mins';
+		timeToNextAutoGrimoire = Math.round((grimoireMax-grimoireMin-5)/grimoireRate/60/ScaleFactor,1)+' mins';
 	}
 	if(grimoireMax-grimoireMin <5){
 		document.getElementById('grimoireSpell0').click();
