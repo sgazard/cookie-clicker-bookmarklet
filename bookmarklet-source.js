@@ -128,15 +128,24 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 		if(xTesting[i].stock>0){
 
 			if(xTesting[i].val<5 && xTesting[i].prev<5){continue;}
-			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' (<span style="color:red;font-weight:bold;">-'+((1-xTesting[i].val/xTesting[i].prev)*100).toFixed(1)+'</span>)%');}
+			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' (<span style="color:red;font-weight:bold;">-'+formatNumber((1-xTesting[i].val/xTesting[i].prev)*100)+'</span>)%');}
 			else{ret.profit.push(xTesting[i].symbol);}
 		}
 	}
-	ret.html = '<div style="margin-top:0.5em">Stocks: '+(StockTotal).toFixed(1)+' ('+((StockTotal)-(origPurchaseAmount)).toFixed(1)+' | '+((StockTotal)/(origPurchaseAmount)*100-100).toFixed(1)+'%), Wrinklers:'+wrinklers.total.toFixed(1)+' (Max: '+wrinklers.maxScaled.toFixed(1)+'), Cookies '+((Game.cookies)/ScaleFactor).toFixed(1)+' =&gt; Total: '+((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal).toFixed(1)+' | '+timeNextGrimoire+'</div>';
+	ret.html = '<div style="margin-top:0.5em">Stocks: '+formatNumber(StockTotal)+' ('+formatNumber((StockTotal)-(origPurchaseAmount))+' | '+formatNumber((StockTotal)/(origPurchaseAmount)*100-100)+'%), Wrinklers:'+formatNumber(wrinklers.total)+' (Max: '+formatNumber(wrinklers.maxScaled)+'), Cookies '+formatNumber((Game.cookies)/ScaleFactor)+' =&gt; Total: '+formatNumber((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal)+' | '+timeNextGrimoire+'</div>';
 	if(ret.loss.length>0){ret.html +='<div style="margin-top:0.5em">Loss: '+ret.loss.join(', ')+'</div>';}
 
 	return ret;
 };
+
+function formatNumber(num){
+	return num.toLocaleString(
+	  'en-US',{
+		minimumFractionDigits: 1,
+		maximumFractionDigits: 1,
+	  }
+	);
+}
 
 // currently not smart enough to know if we've got a clot running
 GrimoireAutoClickConjure = function(){
