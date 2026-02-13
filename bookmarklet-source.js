@@ -180,7 +180,7 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 		}
 
 	}
-	ret.html = '<div style="margin-top:0.5em">Stocks: '+formatNumber(StockTotal)+' ('+formatNumber((StockTotal)-(origPurchaseAmount))+' | '+formatNumber((StockTotal)/(origPurchaseAmount)*100-100)'%), Wrinklers:'+formatNumber(wrinklers.total)+' (Max: '+formatNumber(wrinklers.maxScaled)+'), Cookies '+formatNumber((Game.cookies)/ScaleFactor)+' =&gt; Total: '+formatNumber((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal)+' | '+timeNextGrimoire+'</div>';
+	ret.html = '<div style="margin-top:0.5em">Stocks: '+formatNumber(StockTotal)+' ('+formatNumber((StockTotal)-(origPurchaseAmount))+' | '+formatNumber((StockTotal)/(origPurchaseAmount)*100-100)+'%), Wrinklers:'+formatNumber(wrinklers.total)+' (Max: '+formatNumber(wrinklers.maxScaled)+'), Cookies '+formatNumber((Game.cookies)/ScaleFactor)+' =&gt; Total: '+formatNumber((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal)+' | '+timeNextGrimoire+'</div>';
 	if(ret.loss.length>0){ret.html +='<div style="margin-top:0.5em">Loss: '+ret.loss.join(', ')+'</div>';}
 
 	return ret;
