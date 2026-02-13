@@ -34,16 +34,54 @@ var Stockmarket = function(clicked){
 	// get a reference to the built object
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
 
-
-
-
-	
 	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, Above: <a href="#" onclick="StockmarketSellAbove(9.99);return false;">10</a>, <a href="#" onclick="StockmarketSellAbove(49.99);return false;">50</a>, <a href="#" onclick="StockmarketSellAbove(99.99);return false;">100</a>, <a href="#" onclick="StockmarketSellAbove(149.99);return false;">150</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats.html;
 
 	xTestingStockMarket.innerHTML = onclickString;
 
 	// permit copying data to the clipboard if the browser has noticed the click
 	if(clicked == true){navigator.clipboard.writeText(xTestingString);}
+
+	// update tickers across the stockmarket object
+	var tmpElem,tmpTicker,idx,create=false;
+	var getEl = function(el){return document.getElementById(el);};
+	var keep = {};
+	// console.log(stats.change);
+	for(a=0;a<stats.change.length;a++){
+		create=false;
+		idx = stats.change[a][0];
+		// log those to not remove
+		keep['index'+idx] = true;
+		tmpElem = getEl('bankGood-'+idx);
+		tmpTicker = getEl('Stockmarket-'+idx);
+		
+		// need to make this work
+		if(tmpElem && !tmpTicker){
+			create=true;
+			tmpTicker = document.createElement('div');
+			tmpTicker.id = 'Stockmarket-'+idx;
+		}
+		tmpTicker.innerText = stats.change[a][1].toFixed(2);
+		if(create===true){
+			tmpElem.appendChild(tmpTicker);
+		}
+		// change in value
+		if(stats.change[a][1]<0){
+			tmpTicker.style.backgroundColor='red';
+		}
+		else{
+			tmpTicker.style.backgroundColor='green';
+		}
+	}
+
+	// remove extra ones after selling
+	for(i=0;i<=20;i++){
+		tmpTicker = getEl('Stockmarket-'+i);
+		if(!keep.hasOwnProperty('index'+i) && tmpTicker){
+			tmpTicker.remove();
+		}
+
+	}
+
 };
 
 // get Wrinkler Average information and total numbers
@@ -107,30 +145,40 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 	// object for stock market
 	var xTesting=Game.Objects.Bank.minigame.goods;
 	// total stock market, Stock Stats
-	var ret = {'stats':[],'html':'','profit':[],'loss':[]};
+	var ret = {'stats':[],'html':'','profit':[],'loss':[],change:[]};
 	var timeNextGrimoire = GrimoireAutoClickConjure();
 
 	// search for stock market information
+	// because the "++" happens immediately
+	var j=-1;
 	for(var i in xTesting){
+		j++;		
 		if(!xTesting.hasOwnProperty(i)){continue;}
 
-			// SUM up the total for UI ticker
-			tmpTotal = (xTesting[i].stock*xTesting[i].val*factor2); 
-			StockTotal += tmpTotal;
+		// SUM up the total for UI ticker
+		tmpTotal = (xTesting[i].stock*xTesting[i].val*factor2); 
+		StockTotal += tmpTotal;
 
-			// to determine any profit, if 
-			origPurchaseAmount += tmpTotal/xTesting[i].val*xTesting[i].prev;
+		// to determine any overall profit, if exists
+		origPurchaseAmount += tmpTotal/xTesting[i].val*xTesting[i].prev;
 
-			// add the stock info for exporting
-			ret.stats.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
+		// add the stock info for exporting
+		ret.stats.push((xTesting[i].stock*xTesting[i].val*factor2).toFixed(2));
 
 		// care only about stocks 'owned' in the game for profit/loss
 		if(xTesting[i].stock>0){
+			ret.change.push([j,(xTesting[i].stock*(xTesting[i].val-xTesting[i].prev)*factor2),xTesting[i].symbol]);
 
 			if(xTesting[i].val<5 && xTesting[i].prev<5){continue;}
-			if(xTesting[i].val<xTesting[i].prev){ret.loss.push(xTesting[i].symbol+' (<span style="color:red;font-weight:bold;">-'+formatNumber((1-xTesting[i].val/xTesting[i].prev)*100)+'</span>)%');}
-			else{ret.profit.push(xTesting[i].symbol);}
+			// log profit/loss
+			if(xTesting[i].val<xTesting[i].prev){
+				ret.loss.push(xTesting[i].symbol+' (<span style="color:red;font-weight:bold;">-'+formatNumber((1-xTesting[i].val/xTesting[i].prev)*100)+'</span>)%');
+			}
+			else{
+				ret.profit.push(xTesting[i].symbol);
+			}
 		}
+
 	}
 	ret.html = '<div style="margin-top:0.5em">Stocks: '+formatNumber(StockTotal)+' ('+formatNumber((StockTotal)-(origPurchaseAmount))+' | '+formatNumber((StockTotal)/(origPurchaseAmount)*100-100)+'%), Wrinklers:'+formatNumber(wrinklers.total)+' (Max: '+formatNumber(wrinklers.maxScaled)+'), Cookies '+formatNumber((Game.cookies)/ScaleFactor)+' =&gt; Total: '+formatNumber((Game.cookies)/ScaleFactor+wrinklers.maxScaled+StockTotal)+' | '+timeNextGrimoire+'</div>';
 	if(ret.loss.length>0){ret.html +='<div style="margin-top:0.5em">Loss: '+ret.loss.join(', ')+'</div>';}
@@ -165,6 +213,21 @@ GrimoireAutoClickConjure = function(){
 	}
 	return timeToNextAutoGrimoire;
 }
+
+StoreAutoClicker = function(){
+	var storebutton = getEl('storeBuyAllButton');
+	if(storebutton && storebutton.click){
+		storebutton.click();
+	}
+}
+
+FortuneAutoClicker = function(){
+	var fortunebutton  = getEl('commentsText1');
+	if(fortunebutton.innerHTML && fortunebutton.innerHTML.match(/fortune/)){
+		fortunebutton.click();
+	}
+	
+}
 // buy stock below $5 automatically and update ticker every 2 seconds
 var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
 
@@ -175,6 +238,7 @@ Stockmarket();
 // set 10 as the buying default
 document.getElementById('storeBulk10').click();
 
+var getEl = function(el){return document.getElementsByClassName(el);};
 
 ClickThoseCookiesNow = function(){
 	var getEl = function(el){return document.getElementsByClassName(el);};
