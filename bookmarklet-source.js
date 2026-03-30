@@ -137,7 +137,20 @@ var StockmarketBuyBelow = function(below){
 	}
 	// update totals
 	Stockmarket();
+	FortuneClicker();
 };
+
+var FortuneClicker = function(){
+	var getEl = function(el){
+		if(document && document.getElementById && document.getElementById(el)){return document.getElementById(el);}
+		else{return false;}
+	};
+	var tmp = getEl('commentsText1');
+	if(tmp && tmp.innerHTML && tmp.innerHTML.toString().match(/fortune/)){
+		console.log('FORTUNE!!!!');
+		tmp.click();
+	}
+}
 
 var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 	// variables ready for use
@@ -193,7 +206,7 @@ function formatNumber(num){
 		maximumFractionDigits: 1,
 	  }
 	);
-}
+};
 
 // currently not smart enough to know if we've got a clot running
 GrimoireAutoClickConjure = function(){
@@ -212,22 +225,27 @@ GrimoireAutoClickConjure = function(){
 		document.getElementById('grimoireSpell0').click();
 	}
 	return timeToNextAutoGrimoire;
-}
+};
 
 StoreAutoClicker = function(){
 	var storebutton = getEl('storeBuyAllButton');
 	if(storebutton && storebutton.click){
 		storebutton.click();
 	}
-}
+};
 
-FortuneAutoClicker = function(){
-	var fortunebutton  = getEl('commentsText1');
-	if(fortunebutton.innerHTML && fortunebutton.innerHTML.match(/fortune/)){
-		fortunebutton.click();
+var FortuneClicker = function(){
+	var getEl = function(el){
+		if(document && document.getElementById && document.getElementById(el)){return document.getElementById(el);}
+		else{return false;}
+	};
+	var tmp = getEl('commentsText1');
+	if(tmp && tmp.innerHTML && tmp.innerHTML.toString().match(/fortune/)){
+		console.log('FORTUNE!!!!');
+		tmp.click();
 	}
-	
-}
+};
+
 // buy stock below $5 automatically and update ticker every 2 seconds
 var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
 
@@ -238,11 +256,12 @@ Stockmarket();
 // set 10 as the buying default
 document.getElementById('storeBulk10').click();
 
-var getEl = function(el){return document.getElementsByClassName(el);};
+var getElClass = function(el){return document.getElementsByClassName(el);};
 
 ClickThoseCookiesNow = function(){
-	var getEl = function(el){return document.getElementsByClassName(el);};
-	var golden = getEl('shimmer');
+	var getElClass = function(el){return document.getElementsByClassName(el);};
+	var golden = getElClass('shimmer');
+	// console.log('clicking check');
 	if(golden && golden.length>0){
 		console.log('['+(new Date().toLocaleString())+'] attempting to click these '+golden.length+' cookies');
 		for (var i in golden){
