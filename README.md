@@ -5,6 +5,8 @@
 4. sets the stock purchase to be 10 so you can get sugar lumps faster by buying the correct multiples.
 5. allows you to sell all stock immediately above preset price points of 5,10,15,100,150 in case the stock market tanks
 6. Allows you to copy the data out in a format explained below (or just use the spreadsheet)
+7. Automatically clicks *all golden cookies*
+8. Automatically clicks on the fortunes in the header (useful in ascensions) - it doesn't buy them
 
 ## screenshot of bar
 <img width="633" height="48" alt="Screenshot 2026-03-18 at 09 30 48" src="https://github.com/user-attachments/assets/4a4ba56e-30bb-40e4-93a0-b73a9debe811" />
