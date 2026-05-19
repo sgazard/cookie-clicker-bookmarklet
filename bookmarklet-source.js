@@ -8,8 +8,9 @@ var Stockmarket = function(clicked){
 	var tmpWrinklerAverage = WrinklerAverage(ScaleFactor);
 
 	var wrinklers = {
-		'total':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]),
-		'maxScaled':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]*1.21)
+		// add in Golden total separately
+		'total':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1])+(tmpWrinklerAverage[2]*tmpWrinklerAverage[3]),
+		'maxScaled':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]*1.21)+(tmpWrinklerAverage[2]*tmpWrinklerAverage[3])*1.21*3
 	};
 
 	// build the stats & HTML
@@ -19,7 +20,7 @@ var Stockmarket = function(clicked){
 	// make the Stock values ready for export
 	var xTestingString = stats.stats.join(',');
 	// make the string ready for exporting
-	xTestingString = [Game.cookies/ScaleFactor,tmpWrinklerAverage[0],tmpWrinklerAverage[1],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString].join('|');
+	xTestingString = [Game.cookies/ScaleFactor,tmpWrinklerAverage[0],tmpWrinklerAverage[1],Game.cookiesPs*0.4/ScaleFactor,Game.cookiesEarned/ScaleFactor,xTestingString,tmpWrinklerAverage[2],tmpWrinklerAverage[3]].join('|');
 
 	// build (if needed) the box for the stats
 	if(!document.getElementById('xTestingStockMarket')){
@@ -88,16 +89,22 @@ var Stockmarket = function(clicked){
 var WrinklerAverage = function(ScaleFactor){
 	var WrinklerCount = 0;
 	var WrinklerTotal = 0;
+	var GoldenCount=0;
+	var GoldenTotal=0;
 	for (var i in Game.wrinklers){
 		if(!Game.wrinklers.hasOwnProperty(i)){continue;}
-		if(Game.wrinklers[i].sucked>0){
+		if(Game.wrinklers[i].type===1 && Game.wrinklers[i].sucked>0){
+			GoldenCount++;
+			GoldenTotal += Game.wrinklers[i].sucked;
+		}
+		else if(Game.wrinklers[i].sucked>0){
 			WrinklerCount++;
 			WrinklerTotal += Game.wrinklers[i].sucked;
 		}
 	}
 	// don't return NaN
 	if(WrinklerCount==0){return [0,0];}
-	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerCount]);
+	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerCount,GoldenTotal/GoldenCount/ScaleFactor,GoldenCount]);
 };
 
 // condensed function to allow selling based on an arbitrary number
@@ -206,7 +213,7 @@ function formatNumber(num){
 		maximumFractionDigits: 1,
 	  }
 	);
-};
+}
 
 // currently not smart enough to know if we've got a clot running
 GrimoireAutoClickConjure = function(){
@@ -225,14 +232,14 @@ GrimoireAutoClickConjure = function(){
 		document.getElementById('grimoireSpell0').click();
 	}
 	return timeToNextAutoGrimoire;
-};
+}
 
 StoreAutoClicker = function(){
 	var storebutton = getEl('storeBuyAllButton');
 	if(storebutton && storebutton.click){
 		storebutton.click();
 	}
-};
+}
 
 var FortuneClicker = function(){
 	var getEl = function(el){
