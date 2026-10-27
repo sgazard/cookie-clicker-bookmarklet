@@ -1,5 +1,6 @@
 // track stockmarket, and other data into a copyable string for external usage
 var Stockmarket = function(clicked){
+
 	// 1e+57 is Octodecillion
 	var ScaleFactor=1e+57;
 	// this corrects a multiplication issue I see to align with the UI
@@ -10,7 +11,7 @@ var Stockmarket = function(clicked){
 	var wrinklers = {
 		// add in Golden total separately
 		'total':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1])+(tmpWrinklerAverage[2]*tmpWrinklerAverage[3]),
-		'maxScaled':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]*1.21)+(tmpWrinklerAverage[2]*tmpWrinklerAverage[3])*1.21*3
+		'maxScaled':(tmpWrinklerAverage[0]*tmpWrinklerAverage[1]*1.21)+(tmpWrinklerAverage[2]*tmpWrinklerAverage[3])*1.21
 	};
 
 	// build the stats & HTML
@@ -32,10 +33,14 @@ var Stockmarket = function(clicked){
 		document.body.appendChild(xTestingStockMarket);
 	}
 
+
+
 	// get a reference to the built object
 	xTestingStockMarket = document.getElementById('xTestingStockMarket');
 
+
 	var onclickString = '<div><a href="#" onclick="Stockmarket(true);return false;">Copy updated values</a>  | Sell <a href="#" onclick="StockmarketSellAbove(0);return false;">all stock</a>, Above: <a href="#" onclick="StockmarketSellAbove(9.99);return false;">10</a>, <a href="#" onclick="StockmarketSellAbove(49.99);return false;">50</a>, <a href="#" onclick="StockmarketSellAbove(99.99);return false;">100</a>, <a href="#" onclick="StockmarketSellAbove(149.99);return false;">150</a> | <a href="StockmarketSellAbove(10,true);return false;" style="color:red;">Red above 10</a>| <a href="#" onclick="StockmarketBuyBelow(10);return false;">BUY all below 10</a> <br/></div>'+stats.html;
+
 
 	xTestingStockMarket.innerHTML = onclickString;
 
@@ -44,7 +49,6 @@ var Stockmarket = function(clicked){
 
 	// update tickers across the stockmarket object
 	var tmpElem,tmpTicker,idx,create=false;
-	var getEl = function(el){return document.getElementById(el);};
 	var keep = {};
 	// console.log(stats.change);
 	for(a=0;a<stats.change.length;a++){
@@ -52,8 +56,8 @@ var Stockmarket = function(clicked){
 		idx = stats.change[a][0];
 		// log those to not remove
 		keep['index'+idx] = true;
-		tmpElem = getEl('bankGood-'+idx);
-		tmpTicker = getEl('Stockmarket-'+idx);
+		tmpElem = stockGetEl('bankGood-'+idx);
+		tmpTicker = stockGetEl('Stockmarket-'+idx);
 		
 		// need to make this work
 		if(tmpElem && !tmpTicker){
@@ -76,7 +80,7 @@ var Stockmarket = function(clicked){
 
 	// remove extra ones after selling
 	for(i=0;i<=20;i++){
-		tmpTicker = getEl('Stockmarket-'+i);
+		tmpTicker = stockGetEl('Stockmarket-'+i);
 		if(!keep.hasOwnProperty('index'+i) && tmpTicker){
 			tmpTicker.remove();
 		}
@@ -104,7 +108,8 @@ var WrinklerAverage = function(ScaleFactor){
 	}
 	// don't return NaN
 	if(WrinklerCount==0){return [0,0];}
-	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerCount,GoldenTotal/GoldenCount/ScaleFactor,GoldenCount]);
+	var GoldenScaled = (GoldenCount>0)? GoldenTotal/GoldenCount/ScaleFactor:0;
+	return ([WrinklerTotal/WrinklerCount/ScaleFactor,WrinklerCount,GoldenScaled,GoldenCount]);
 };
 
 // condensed function to allow selling based on an arbitrary number
@@ -113,11 +118,10 @@ var StockmarketSellAbove = function(above,sellFallingStock){
 	if(sellFallingStock==true){
 		console.log('selling falling stock above $'+above);
 	}
-	var getEl = function(el){return document.getElementById(el);};
 	var currentEl;
 	for(var i=0;i<21;i++){
-		valEl = getEl('bankGood-'+i+'-val').innerText.replace(/\$/,'');
-		clickEl = getEl('bankGood-'+i+'_-All');
+		valEl = stockGetEl('bankGood-'+i+'-val').innerText.replace(/\$/,'');
+		clickEl = stockGetEl('bankGood-'+i+'_-All');
 		// nothing to click on.  nothing to determine
 		if(!clickEl){continue;}
 		// click if the value is below 10
@@ -129,16 +133,13 @@ var StockmarketSellAbove = function(above,sellFallingStock){
 // buy below a value.  Useful for automatic buying below a value
 var StockmarketBuyBelow = function(below){
 	Stockmarket();
-	var getEl = function(el){
-		if(document && document.getElementById && document.getElementById(el)){return document.getElementById(el);}
-		else{return false;}
-	};
+
 	var currentEl;
 	for(var i=0;i<21;i++){
-		clickEl = getEl('bankGood-'+i+'_Max');
+		clickEl = stockGetEl('bankGood-'+i+'_Max');
 		// nothing to click on.  nothing to determine
 		if(!clickEl){continue;}
-		valEl = getEl('bankGood-'+i+'-val').innerText.replace(/\$/,'');
+		valEl = stockGetEl('bankGood-'+i+'-val').innerText.replace(/\$/,'');
 		// click if the value is below 10
 		if(Math.floor(valEl)+0<below){clickEl.click();}
 	}
@@ -148,11 +149,8 @@ var StockmarketBuyBelow = function(below){
 };
 
 var FortuneClicker = function(){
-	var getEl = function(el){
-		if(document && document.getElementById && document.getElementById(el)){return document.getElementById(el);}
-		else{return false;}
-	};
-	var tmp = getEl('commentsText1');
+
+	var tmp = stockGetEl('commentsText1');
 	if(tmp && tmp.innerHTML && tmp.innerHTML.toString().match(/fortune/)){
 		console.log('FORTUNE!!!!');
 		tmp.click();
@@ -160,6 +158,7 @@ var FortuneClicker = function(){
 }
 
 var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
+	
 	// variables ready for use
 	var xTestingStockMarket = {},tmpString = '',tmpTotal = 0,StockTotal=0,origPurchaseAmount=0;	
 	// object for stock market
@@ -206,7 +205,7 @@ var StockmarketStats = function(ScaleFactor,factor2,wrinklers){
 	return ret;
 };
 
-function formatNumber(num){
+var formatNumber = function(num){
 	return num.toLocaleString(
 	  'en-US',{
 		minimumFractionDigits: 1,
@@ -216,7 +215,7 @@ function formatNumber(num){
 }
 
 // currently not smart enough to know if we've got a clot running
-GrimoireAutoClickConjure = function(){
+var GrimoireAutoClickConjure = function(){
 	// this scale factor is simply because the GrimoireRate is otherwise wrong
 	// no idea why this needs to be compensated for
 	var ScaleFactor = 29;  
@@ -234,24 +233,128 @@ GrimoireAutoClickConjure = function(){
 	return timeToNextAutoGrimoire;
 }
 
-StoreAutoClicker = function(){
-	var storebutton = getEl('storeBuyAllButton');
+var StoreAutoClicker = function(){
+	var storebutton = stockGetEl('storeBuyAllButton');
 	if(storebutton && storebutton.click){
 		storebutton.click();
 	}
 }
 
 var FortuneClicker = function(){
-	var getEl = function(el){
-		if(document && document.getElementById && document.getElementById(el)){return document.getElementById(el);}
-		else{return false;}
-	};
-	var tmp = getEl('commentsText1');
+
+	var tmp = stockGetEl('commentsText1');
 	if(tmp && tmp.innerHTML && tmp.innerHTML.toString().match(/fortune/)){
-		console.log('FORTUNE!!!!');
+		// console.log('FORTUNE!!!!');
 		tmp.click();
 	}
 };
+
+// this only changes every minute
+var stockTracker = function(){
+	if(!window.stockTrackerActionMin){
+		window.stockTrackerActionMin = 3;
+	}
+	var actionMiminum = window.stockTrackerActionMin;
+  var prev;
+  // store a number
+  var trend;
+  var idx=0,price,amount;
+  var j,totalvalues;
+  var totalPerStock = 0;
+  if(!window.stockdata){
+  	window.stockdata = {};
+  }
+  // got stock data- need to analyse
+  // console.log(new Date()+': attempting analysis');
+  // object for stock market
+  var xTesting=Game.Objects.Bank.minigame.goods;
+  for(var i in xTesting){
+    if(!xTesting.hasOwnProperty(i)){continue;}
+    // console.log(`checking ${i} (${xTesting[i].symbol})`);
+
+    // array so we can get data to iterate over
+    if(!stockdata.hasOwnProperty(i)){stockdata[i] = [];}
+    // units don't matter.  the trend will
+	stockdata[i].push(xTesting[i].val);
+	totalvalues = stockdata[i].length;
+	
+	// 1 is not a trend...
+	if(totalvalues===1 || totalvalues<actionMiminum){
+		// console.log(`  - setting initial values for ${i} <-- total value = ${totalvalues}`);
+      continue;
+    }	
+	// keep only last 10
+	if(totalvalues>6){
+      stockdata[i].shift();
+	}
+	
+    trend = 0;
+    // iterate over what we've seen and see if last 5 (minimum) are up/down and buy/sell accordingly
+	for(j=0;j<totalvalues;j++){
+      // initial value in data
+      if(j===0){
+
+      	prev=stockdata[i][j];
+      	continue;
+      }
+
+      if(stockdata[i][j]>prev){trend++;}else{trend--;}
+
+	}
+	price = stockGetEl('bankGood-'+idx+'-val').innerText.replace(/\$/,'');
+	amount = xTesting[i].stock;
+	// console.log(`   - Building: ${[i÷]} trend: ${trend} vs ${actionMiminum}.  Amount ${amount}`);
+	if(trend != 0 && Math.abs(trend)>actionMiminum){
+
+			// buy all
+			if(trend>0 && amount===0){
+				console.log(`${new Date()}  - buying: ${i} (${xTesting[i].symbol}) - bankGood-${idx}_Max`);
+				stockGetEl('bankGood-'+idx+'_Max').click();
+
+			}
+			// sell all
+			else if(trend<0 && amount>0 && price >20){
+				console.log(`${new Date()}   - selling: ${i} (${xTesting[i].symbol})- bankGood-${idx}_Max'`);
+				stockGetEl('bankGood-'+idx+'_-All').click();			
+			}
+
+	}
+
+	idx++;
+  }
+  	// dropdowns to change the buying/lookback settings
+	var dropdown = '<select name="" onchange="CHANGE">';
+	var isSelected = '';
+	for(var i=1;i<=10;i++){
+		isSelected = '';
+		if(window.stockTrackerActionMin == i){
+			isSelected = ' selected';
+		}
+		dropdown = dropdown +`<option${isSelected}>${i}</option>`;
+	}
+	var dropdown = dropdown + '</select>';
+	var form = `<form>stock data lookback:  ${dropdown.replace(/CHANGE/,"window.stockTrackerActionMin=parseInt(this.value);")}</form>`;
+	var stockChanger = `<div>${form}</div>`;
+
+	// build (if needed) the box for the stats
+	if(!document.getElementById('xStockMarketControl')){
+		xTestingStockMarket = document.createElement('div');
+		xTestingStockMarket.id='xStockMarketControl';
+		// positioning to avoid being near scrollbars if zoomed in/out
+		// background colour of blue is simply because it stands out
+		xTestingStockMarket.style="position:absolute;bottom:200px;left:15px;border:1px solid red;z-index:1000000000000;padding:4px;background-color:blue";
+		document.body.appendChild(xTestingStockMarket);
+	}  
+
+	// get a reference to the built object
+	xTestingStockMarket = document.getElementById('xStockMarketControl');
+	xTestingStockMarket.innerHTML = stockChanger;	
+}
+
+var stockGetEl = function(el){
+	if(document && document.getElementById && document.getElementById(el)){return document.getElementById(el);}
+	else{return false;}
+}
 
 // buy stock below $5 automatically and update ticker every 2 seconds
 var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
@@ -259,18 +362,23 @@ var StockmarketAutobuy = setInterval(StockmarketBuyBelow,2000,5);
 
 // run for the first time to allow UI and buttons
 Stockmarket();
+stockTracker();
+
+// setup polling of stockdata
+if(stockTrackerTracking){clearInterval(stockTrackerTracking);}
+var stockTrackerTracking = setInterval(stockTracker,60*1000);
 
 // set 10 as the buying default
-document.getElementById('storeBulk10').click();
+if(stockGetEl('storeBulk10')){stockGetEl('storeBulk10').click();}
 
 var getElClass = function(el){return document.getElementsByClassName(el);};
 
-ClickThoseCookiesNow = function(){
+var ClickThoseCookiesNow = function(){
 	var getElClass = function(el){return document.getElementsByClassName(el);};
 	var golden = getElClass('shimmer');
 	// console.log('clicking check');
 	if(golden && golden.length>0){
-		console.log('['+(new Date().toLocaleString())+'] attempting to click these '+golden.length+' cookies');
+		// console.log('['+(new Date().toLocaleString())+'] attempting to click these '+golden.length+' cookies');
 		for (var i in golden){
 			if(!golden.hasOwnProperty(i)){continue;}
 			else{golden[i].click();}
