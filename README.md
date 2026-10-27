@@ -9,7 +9,11 @@
 8. Automatically clicks on the fortunes in the header (useful in ascensions) - it doesn't buy them
 
 ## screenshot of bar
-<img width="633" height="48" alt="Screenshot 2026-03-18 at 09 30 48" src="https://github.com/user-attachments/assets/4a4ba56e-30bb-40e4-93a0-b73a9debe811" />
+<img width="566" height="58" alt="Screenshot 2026-10-27 at 17 22 57" src="https://github.com/user-attachments/assets/417270e6-b46e-4b79-9d06-1334c5199c6c" />
+
+## screenshot of stockmarket configuration
+You can choose how much data to use to make an adjustment on when to buy/sell
+<img width="148" height="39" alt="Screenshot 2026-10-27 at 17 22 49" src="https://github.com/user-attachments/assets/34df59bd-51ae-4a81-ad84-14f8bb9c4e1c" />
 
 
 It will create a blue bar that can be clicked on to copy the data in Pipe delimited format, and also has a button to seel everything on the stock market when it all changes for the worse
