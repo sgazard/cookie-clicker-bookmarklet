@@ -13,6 +13,7 @@
 
 ## screenshot of stockmarket configuration
 You can choose how much data to use to make an adjustment on when to buy/sell
+
 <img width="148" height="39" alt="Screenshot 2026-10-27 at 17 22 49" src="https://github.com/user-attachments/assets/34df59bd-51ae-4a81-ad84-14f8bb9c4e1c" />
 
 
