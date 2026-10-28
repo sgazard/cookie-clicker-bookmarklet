@@ -275,52 +275,54 @@ var stockTracker = function(){
     // array so we can get data to iterate over
     if(!stockdata.hasOwnProperty(i)){stockdata[i] = [];}
     // units don't matter.  the trend will
-	stockdata[i].push(xTesting[i].val);
-	totalvalues = stockdata[i].length;
+    stockdata[i].push(xTesting[i].val);
+	  totalvalues = stockdata[i].length;
 	
-	// 1 is not a trend...
-	if(totalvalues===1 || totalvalues<actionMiminum){
-		// console.log(`  - setting initial values for ${i} <-- total value = ${totalvalues}`);
+	  // 1 is not a trend...
+	  if(totalvalues===1 || totalvalues<actionMiminum){
+		  // console.log(`  - setting initial values for ${i} <-- total value = ${totalvalues}`);
       continue;
     }	
-	// keep only last 10
-	if(totalvalues>6){
-      stockdata[i].shift();
-	}
+		// keep only last X
+		if(totalvalues>6){
+	      stockdata[i].shift();
+		}
 	
     trend = 0;
+    prev='';
     // iterate over what we've seen and see if last 5 (minimum) are up/down and buy/sell accordingly
-	for(j=0;j<totalvalues;j++){
+    for(j=totalvalues-1;j>=0;j--){
       // initial value in data
-      if(j===0){
+      if(prev === ''){
 
       	prev=stockdata[i][j];
       	continue;
       }
 
-      if(stockdata[i][j]>prev){trend++;}else{trend--;}
+      if(stockdata[i][j]>prev){trend++;}
+      else{trend--;}
 
-	}
-	price = stockGetEl('bankGood-'+idx+'-val').innerText.replace(/\$/,'');
-	amount = xTesting[i].stock;
-	// console.log(`   - Building: ${[i÷]} trend: ${trend} vs ${actionMiminum}.  Amount ${amount}`);
-	if(trend != 0 && Math.abs(trend)>actionMiminum){
+		}
+		price = stockGetEl('bankGood-'+idx+'-val').innerText.replace(/\$/,'');
+		amount = xTesting[i].stock;
+		// console.log(`   - Building: ${[i÷]} trend: ${trend} vs ${actionMiminum}.  Amount ${amount}`);
+		if(trend != 0 && Math.abs(trend)>actionMiminum){
 
-			// buy all
-			if(trend>0 && amount===0){
-				console.log(`${new Date()}  - buying: ${i} (${xTesting[i].symbol}) - bankGood-${idx}_Max`);
-				stockGetEl('bankGood-'+idx+'_Max').click();
+				// buy all
+				if(trend>0 && amount===0){
+					console.log(`${new Date()}  - buying: ${i} (${xTesting[i].symbol}) - bankGood-${idx}_Max`);
+					stockGetEl('bankGood-'+idx+'_Max').click();
 
-			}
-			// sell all
-			else if(trend<0 && amount>0 && price >20){
-				console.log(`${new Date()}   - selling: ${i} (${xTesting[i].symbol})- bankGood-${idx}_Max'`);
-				stockGetEl('bankGood-'+idx+'_-All').click();			
-			}
+				}
+				// sell all
+				else if(trend<0 && amount>0 && price >20){
+					console.log(`${new Date()}   - selling: ${i} (${xTesting[i].symbol})- bankGood-${idx}_Max'`);
+					stockGetEl('bankGood-'+idx+'_-All').click();			
+				}
 
-	}
+		}
 
-	idx++;
+		idx++;
   }
   	// dropdowns to change the buying/lookback settings
 	var dropdown = '<select name="" onchange="CHANGE">';
