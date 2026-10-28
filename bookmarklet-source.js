@@ -257,7 +257,7 @@ var stockTracker = function(){
 	var actionMiminum = window.stockTrackerActionMin;
   var prev;
   // store a number
-  var trend;
+  var trend = 0;
   var idx=0,price,amount;
   var j,totalvalues;
   var totalPerStock = 0;
@@ -269,6 +269,7 @@ var stockTracker = function(){
   // object for stock market
   var xTesting=Game.Objects.Bank.minigame.goods;
   for(var i in xTesting){
+  	trend = 0;
     if(!xTesting.hasOwnProperty(i)){continue;}
     // console.log(`checking ${i} (${xTesting[i].symbol})`);
 
@@ -299,10 +300,15 @@ var stockTracker = function(){
       	continue;
       }
 
-      if(stockdata[i][j]>prev){trend++;}
-      else{trend--;}
-
+      if(stockdata[i][j]>prev){trend--;}
+      else{trend++;}
+     	prev=stockdata[i][j];
+ 
 		}
+
+		console.log(`Ticker:  ${i}, trend: ${trend}, minimumaction: ${actionMiminum}`);
+
+
 		price = stockGetEl('bankGood-'+idx+'-val').innerText.replace(/\$/,'');
 		amount = xTesting[i].stock;
 		// console.log(`   - Building: ${[i÷]} trend: ${trend} vs ${actionMiminum}.  Amount ${amount}`);
@@ -310,13 +316,13 @@ var stockTracker = function(){
 
 				// buy all
 				if(trend>0 && amount===0){
-					console.log(`${new Date()}  - buying: ${i} (${xTesting[i].symbol}) - bankGood-${idx}_Max`);
+					console.log(`${new Date()}  - buying: ${i} (${xTesting[i].symbol}) - bankGood-${idx}_Max -- trend: ${trend}`);
 					stockGetEl('bankGood-'+idx+'_Max').click();
 
 				}
 				// sell all
 				else if(trend<0 && amount>0 && price >20){
-					console.log(`${new Date()}   - selling: ${i} (${xTesting[i].symbol})- bankGood-${idx}_Max'`);
+					console.log(`${new Date()}   - selling: ${i} (${xTesting[i].symbol})- bankGood-${idx}_Max' -- trend: ${trend}`);
 					stockGetEl('bankGood-'+idx+'_-All').click();			
 				}
 
